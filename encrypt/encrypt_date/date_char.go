@@ -9,10 +9,11 @@ func DateStringEncrypt(date string) string {
 	lastCharNum := lastCharAsc - '0'
 	offsetNum := lastCharNum%3 + 1
 	var offsetAsc = offsetNum + '0'
-	encDate := []byte{offsetAsc}
-	for i, char := range date {
+	encDate := make([]byte, 1, len(date))
+	encDate[0] = offsetAsc
+	for i := 0; i < len(date); i++ {
 		if !posIsSep(i) {
-			sigChar = numToChar(byte(char), offsetNum)
+			sigChar = numToChar(byte(date[i]), offsetNum)
 		} else {
 			sigChar = lastCharAsc
 		}
@@ -31,14 +32,14 @@ func DateDecrypt(encryptStr string) string {
 	}
 	offset -= '0'
 	var decDate []byte
-	for i, letter := range encryptStr[1:] {
-		if posIsSep(i) {
+	for i := 1; i < len(encryptStr); i++ {
+		if posIsSep(i - 1) {
 			decDate = append(decDate, '-')
 		} else {
-			if letter > 'Z' || !charIsUpperLetter(byte(letter)) {
+			if encryptStr[i] > 'Z' || !charIsUpperLetter(byte(encryptStr[i])) {
 				return ""
 			}
-			decDate = append(decDate, charToNum(byte(letter), offset))
+			decDate = append(decDate, charToNum(byte(encryptStr[i]), offset))
 		}
 	}
 	return string(decDate)
