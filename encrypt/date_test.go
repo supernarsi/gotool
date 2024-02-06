@@ -25,3 +25,22 @@ func TestDateEncrypt(t *testing.T) {
 		})
 	}
 }
+
+func TestDateDecrypt(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{name: "test date", in: "1DBBD3BD3CE", want: "2002-02-13"},
+		{name: "test date", in: "2ECCC1DE1FD", want: "2000-12-31"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Cleanup(func() {})
+			if got := encrypt.DateDecrypt(tt.in); got != tt.want {
+				t.Errorf("got result %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

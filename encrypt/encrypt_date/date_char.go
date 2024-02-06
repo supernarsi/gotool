@@ -36,10 +36,10 @@ func DateDecrypt(encryptStr string) string {
 		if posIsSep(i - 1) {
 			decDate = append(decDate, '-')
 		} else {
-			if encryptStr[i] > 'Z' || !charIsUpperLetter(byte(encryptStr[i])) {
+			if encryptStr[i] > 'Z' || !charIsUpperLetter(encryptStr[i]) {
 				return ""
 			}
-			decDate = append(decDate, charToNum(byte(encryptStr[i]), offset))
+			decDate = append(decDate, charToNum(encryptStr[i], offset))
 		}
 	}
 	return string(decDate)
