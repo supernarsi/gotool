@@ -24,6 +24,7 @@ func TestDistance(t *testing.T) {
 		{name: "test small distance", input: [4]float64{39.875211897994895, 116.40458367375038, 39.87448996132426, 116.40498141917334}, want: 87.15},
 		{name: "test min distance", input: [4]float64{89.999999, 0, 90.000001, 0}, want: 0.21},
 		{name: "test near distance", input: [4]float64{39.908254, 116.397242, 39.908246, 116.398055}, want: 69.35},
+		{name: "test_13", input: [4]float64{29.53691983396626, 106.50190658067017, 29.536914999999997, 106.50191000000001}, want: 0.62},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -1,4 +1,4 @@
-package douglas
+package compose
 
 import "math"
 

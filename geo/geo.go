@@ -23,6 +23,7 @@ type haversine struct{}
 var distanceCalculator distance
 
 func (d *cosines) Distance(lat1, lng1, lat2, lng2 float64) float64 {
+	// If the two points are the same, return 0
 	if lat1 == lat2 && lng1 == lng2 {
 		return 0
 	}
@@ -38,18 +39,18 @@ func (d *cosines) Distance(lat1, lng1, lat2, lng2 float64) float64 {
 }
 
 func (d *haversine) Distance(lat1, lng1, lat2, lng2 float64) float64 {
-	// 将经纬度转换为弧度
+	// Convert latitude and longitude to radians:
 	rad := math.Pi / 180.0
 	lat1 = lat1 * rad
 	lng1 = lng1 * rad
 	lat2 = lat2 * rad
 	lng2 = lng2 * rad
 
-	// 计算差值
+	// Compute the difference between the two points:
 	dLat := lat2 - lat1
 	dLon := lng2 - lng1
 
-	// 使用 haversine 公式计算距离
+	// Use the Haversine formula to compute the distance:
 	a := math.Pow(math.Sin(dLat/2), 2) + math.Cos(lat1)*math.Cos(lat2)*math.Pow(math.Sin(dLon/2), 2)
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 	distance := earthRadius * c * 1000

@@ -1,10 +1,14 @@
 package gotool_test
 
 import (
+	"context"
 	"math"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/supernarsi/gotool"
+	"github.com/supernarsi/gotool/util"
 )
 
 type uniqueElementsTestCase[T gotool.ElementType] struct {
@@ -131,4 +135,116 @@ func TestUniqueElements(t *testing.T) {
 	runUniqueElementsTestCases(t, intCases)
 	runUniqueElementsTestCases(t, floatCases)
 	runUniqueElementsTestCases(t, stringCases)
+}
+
+func TestCoroutineForeach(t *testing.T) {
+	// 测试 int 类型
+	t.Run("test int", func(t *testing.T) {
+		process1 := func(ctx context.Context, i int) (int, error) {
+			return i * 2, nil
+		}
+		process2 := func(ctx context.Context, i int) (int, error) {
+			return i - 1, nil
+		}
+		tests := []struct {
+			name    string
+			input   []int
+			process func(ctx context.Context, i int) (int, error)
+			want    []int
+		}{
+			{"t1", []int{1, 2, 3}, process1, []int{2, 4, 6}},
+			{"t2", []int{1, 1, 2, 0}, process1, []int{2, 2, 4, 0}},
+			{"t3", []int{4, 3, 2, 1, 0}, process2, []int{3, 2, 1, 0, -1}},
+		}
+
+		for _, v := range tests {
+			got := util.GoForeach(context.Background(), v.input, v.process, 0, 100)
+			for i, val := range got {
+				if val != v.want[i] {
+					t.Errorf("Got %v, want %v", got, v.want)
+				}
+			}
+		}
+	})
+
+	// 测试 string 类型
+	t.Run("test string", func(t *testing.T) {
+		p1 := func(ctx context.Context, s string) (string, error) {
+			return s + "_", nil
+		}
+		p2 := func(ctx context.Context, s string) (string, error) {
+			return strings.ToUpper(s), nil
+		}
+
+		tests := []struct {
+			name    string
+			input   []string
+			process func(ctx context.Context, s string) (string, error)
+			want    []string
+		}{
+			{"s1", []string{"a", "b"}, p1, []string{"a_", "b_"}},
+			{"s2", []string{}, p1, []string{}},
+			{"s3", []string{"a", " ", "+", "B", "dBa"}, p2, []string{"A", " ", "+", "B", "DBA"}},
+		}
+		for _, v := range tests {
+			got := util.GoForeach(context.Background(), v.input, v.process, "", 100)
+			for i, val := range got {
+				if val != v.want[i] {
+					t.Errorf("Got %v, want %v", got, v.want)
+				}
+			}
+		}
+	})
+
+	// 测试类型互转
+	t.Run("test int to string", func(t *testing.T) {
+		p1 := func(ctx context.Context, s int) (string, error) {
+			return strconv.Itoa(s) + "_", nil
+		}
+
+		tests := []struct {
+			name    string
+			input   []int
+			process func(ctx context.Context, s int) (string, error)
+			want    []string
+		}{
+			{"s1", []int{1, 2, 3}, p1, []string{"1_", "2_", "3_"}},
+			{"s2", []int{}, p1, []string{}},
+			{"s3", []int{0, 2}, p1, []string{"0_", "2_"}},
+		}
+		for _, v := range tests {
+			got := util.GoForeach(context.Background(), v.input, v.process, "", 100)
+			for i, val := range got {
+				if val != v.want[i] {
+					t.Errorf("Got %v, want %v", got, v.want)
+				}
+			}
+		}
+	})
+}
+
+func TestRandTasks(t *testing.T) {
+	tests := []struct {
+		name     string
+		inputArr []int
+		inputNum uint
+		want     []int
+	}{
+		{name: "t1", inputArr: []int{1, 2, 3, 4, 5, 6, 7}, inputNum: 3, want: []int{2, 1, 3}},
+		{name: "t2", inputArr: []int{1, 2, 3, 4, 5, 6, 7}, inputNum: 0, want: []int{3, 5, 6}},
+		{name: "t3", inputArr: []int{1, 2, 3, 4, 5, 6, 7}, inputNum: 10, want: []int{1, 6, 7}},
+		{name: "t4", inputArr: []int{1, 2, 3, 4, 5, 6, 7}, inputNum: 999, want: []int{7, 4, 3}},
+	}
+
+	for _, v := range tests {
+		t.Run(v.name, func(t *testing.T) {
+			got := gotool.RandInt(v.inputArr, v.inputNum, 3)
+			for k, gV := range got {
+				if gV != v.want[k] {
+					t.Errorf("%s, want %v, got %v", v.name, v.want, got)
+
+				}
+			}
+		})
+	}
 }

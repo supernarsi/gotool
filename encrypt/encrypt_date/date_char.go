@@ -13,7 +13,7 @@ func DateStringEncrypt(date string) string {
 	encDate[0] = offsetAsc
 	for i := 0; i < len(date); i++ {
 		if !posIsSep(i) {
-			sigChar = numToChar(byte(date[i]), offsetNum)
+			sigChar = numToChar(date[i], offsetNum)
 		} else {
 			sigChar = lastCharAsc
 		}
