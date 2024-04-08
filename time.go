@@ -1,6 +1,7 @@
 package gotool
 
 import (
+	"errors"
 	"time"
 )
 
@@ -30,4 +31,40 @@ func TimeToYmdInt(localTime time.Time) int {
 		return 0
 	}
 	return numericTime.Year()*10000 + int(numericTime.Month())*100 + numericTime.Day()
+}
+
+func IsSameMonthDay(dateStr, timezone string, datetime time.Time, excludeSameYear bool) bool {
+	date, locTime, err := parseTimeToSameLoc(dateStr, datetime, timezone)
+	if err != nil {
+		return false
+	}
+
+	// 比较月份和日期
+	isSameMonth := locTime.Month() == date.Month()
+	isSameDay := locTime.Day() == date.Day()
+
+	yearOk := true
+	if excludeSameYear {
+		yearOk = locTime.Year() != date.Year()
+	}
+
+	return isSameMonth && isSameDay && yearOk
+}
+
+func parseTimeToSameLoc(dateStr string, datetime time.Time, timezone string) (time1, time2 *time.Time, err error) {
+	// 解析时区
+	loc, err := time.LoadLocation(timezone)
+	if err != nil {
+		return nil, nil, errors.New("")
+	}
+
+	// 解析给定的日期字符串
+	date, err := time.ParseInLocation("2006-01-02", dateStr, loc)
+	if err != nil {
+		return nil, nil, errors.New("dateStr is invalidate")
+	}
+	// 获取时间戳在指定时区的时间
+	locTime := datetime.In(loc)
+
+	return &date, &locTime, nil
 }
