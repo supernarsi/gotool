@@ -1,14 +1,10 @@
 package gotool
 
 import (
-	"errors"
 	"math/rand"
 	"reflect"
-	"strconv"
 	"time"
 )
-
-const emptyIdfa = "00000000-0000-0000-0000-000000000000"
 
 type eleInt interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64
@@ -92,77 +88,6 @@ func ListToMap[T any](list []T, key string) map[int]T {
 		result[idx] = item
 	}
 	return result
-}
-
-func ListGroup[T any](list []T, key string) (values map[string][]T, err error) {
-	values = make(map[string][]T)
-	reflectValue := reflect.ValueOf(list)
-	if reflectValue.Kind() != reflect.Slice && reflectValue.Kind() != reflect.Array {
-		err = errors.New("参数必须为切片或数组")
-		return
-	}
-
-	t := reflect.TypeOf((*T)(nil)).Elem()
-	isPtr := t.Kind() == reflect.Ptr
-
-	for i := 0; i < reflectValue.Len(); i++ {
-		item := reflectValue.Index(i)
-		if item.Kind() == reflect.Ptr {
-			item = item.Elem()
-		}
-
-		val := item.FieldByName(key)
-		if !val.IsValid() {
-			err = errors.New("未找到键对应的值")
-			return
-		}
-
-		var keyVal string
-		switch val.Type().Kind() {
-		case reflect.Int, reflect.Int16, reflect.Int32, reflect.Int64:
-			keyVal = strconv.Itoa(int(val.Int()))
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-			keyVal = strconv.Itoa(int(val.Uint()))
-			break
-		case reflect.Float64, reflect.Float32:
-			keyVal = strconv.Itoa(int(val.Float()))
-			break
-		case reflect.String:
-			keyVal = val.String()
-			break
-		default:
-			err = errors.New("键值类型不正确！")
-			return
-		}
-
-		if _, ok := values[keyVal]; !ok {
-			values[keyVal] = make([]T, 0)
-		}
-		arr := values[keyVal]
-		itemVal := item.Interface()
-		if isPtr {
-			itemVal = reflect.New(reflect.TypeOf(item.Interface())).Interface()
-			// 将 item 的值赋值给这个指针
-			reflect.ValueOf(itemVal).Elem().Set(item)
-		}
-
-		values[keyVal] = append(arr, itemVal.(T))
-	}
-	return
-}
-
-func IdfaAvailable(idfa string) bool {
-	return idfa != "" && idfa != emptyIdfa
-}
-
-// TimeToStamp 时间根据时区转时间戳
-func TimeToStamp(dateTime *time.Time, timezone string) (int64, error) {
-	local, err := time.LoadLocation(timezone)
-	if err != nil {
-		return 0, err
-	}
-	t := time.Date(dateTime.Year(), time.Month(dateTime.Month()), dateTime.Day(), dateTime.Hour(), dateTime.Minute(), dateTime.Second(), 0, local)
-	return t.Unix(), nil
 }
 
 func RandInt(nums []int, dayN uint, needNum int) []int {
