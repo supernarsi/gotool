@@ -1,8 +1,10 @@
-package gotool
+package gotool_test
 
 import (
 	"testing"
 	"time"
+
+	"github.com/supernarsi/gotool"
 )
 
 const (
@@ -31,7 +33,7 @@ func TestLocTimestamp(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if s, e := LocTimestamp(tt.inputTime, tt.inputTz); s != tt.wantS || e != tt.wantE {
+			if s, e := gotool.LocTimestamp(tt.inputTime, tt.inputTz); s != tt.wantS || e != tt.wantE {
 				t.Errorf("LocTimestamp() = %v, %v, want %v, %v", s, e, tt.wantS, tt.wantE)
 			}
 		})
@@ -75,7 +77,7 @@ func TestIsSameMonthDay(t *testing.T) {
 
 	for _, v := range test {
 		t.Run(v.name, func(t *testing.T) {
-			if got := IsSameMonthDay(v.inputDateStr, v.inputTimezone, v.inputTime, false); got != v.want {
+			if got := gotool.IsSameMonthDay(v.inputDateStr, v.inputTimezone, v.inputTime, false); got != v.want {
 				t.Errorf("%s want %v, got %v", v.name, v.want, got)
 			}
 		})
