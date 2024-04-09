@@ -83,3 +83,24 @@ func TestIsSameMonthDay(t *testing.T) {
 		})
 	}
 }
+
+func TestTimeToYmdInt(t *testing.T) {
+	tests := []struct {
+		name  string
+		input time.Time
+		want  int
+	}{
+		{"t1", time.Date(2023, 1, 1, 0, 0, 0, 0, locUS), 20230101},
+		{"t2", time.Date(2000, 12, 1, 23, 59, 0, 0, locUS), 20001201},
+		{"t3", time.Date(1990, 2, 29, 23, 59, 0, 0, locUS), 19900301},
+		{"t4", time.Date(1989, 2, 28, 0, 59, 0, 0, locCN), 19890228},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := gotool.TimeToYmdInt(tt.input); got != tt.want {
+				t.Errorf("TimeToYmdInt() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
