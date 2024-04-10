@@ -51,6 +51,22 @@ func IsSameMonthDay(dateStr, timezone string, datetime time.Time, excludeSameYea
 	return isSameMonth && isSameDay && yearOk
 }
 
+func TimeIsAfterDateEnd(dateStr, timezone string, datetime time.Time) bool {
+	date, locTime, err := parseTimeToSameLoc(dateStr, datetime, timezone)
+	if err != nil {
+		return false
+	}
+	return locTime.After(date.Add(24*time.Hour - 1*time.Second))
+}
+
+func TimeIsBeforeDateBegin(dateStr, timezone string, datetime time.Time) bool {
+	date, locTime, err := parseTimeToSameLoc(dateStr, datetime, timezone)
+	if err != nil {
+		return false
+	}
+	return locTime.Before(*date)
+}
+
 func parseTimeToSameLoc(dateStr string, datetime time.Time, timezone string) (time1, time2 *time.Time, err error) {
 	// 解析时区
 	loc, err := time.LoadLocation(timezone)
