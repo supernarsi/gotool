@@ -132,3 +132,31 @@ func TestTimeIsAfterDateEnd(t *testing.T) {
 		})
 	}
 }
+
+func TestTimeIsBeforeDateEnd(t *testing.T) {
+	tests := []struct {
+		name          string
+		inputDate     string
+		inputTimezone string
+		inputTime     time.Time
+		want          bool
+	}{
+		{"t1", "2023-03-01", tzCN, time.Date(2023, 12, 31, 23, 59, 59, 0, locCN), false},
+		{"t2", "2023-03-01", tzCN, time.Date(2023, 02, 31, 23, 59, 59, 0, locCN), false},
+		{"t3", "2023-03-01", tzCN, time.Date(2023, 03, 01, 0, 59, 59, 0, locUS), false},
+		{"t4", "2023-03-01", tzCN, time.Date(2023, 03, 01, 8, 59, 59, 0, locUS), false},
+		{"t5", "2023-03-01", tzCN, time.Date(2023, 03, 01, 9, 0, 1, 0, locUS), false},
+		{"t6", "2023-03-01", tzCN, time.Date(2023, 02, 01, 9, 0, 1, 0, locUS), true},
+		{"t7", "2023-03-01", tzCN, time.Date(2023, 02, 27, 9, 0, 1, 0, locUS), true},
+		{"t8", "2023-03-01", tzCN, time.Date(2000, 02, 27, 9, 0, 1, 0, locCN), true},
+		{"t9", "2023-03-01", tzCN, time.Date(2023, 03, 01, 0, 0, 1, 0, locUS), false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := gotool.TimeIsBeforeDateBegin(tt.inputDate, tt.inputTimezone, tt.inputTime); got != tt.want {
+				t.Errorf("TimeIsBeforeDateBegin() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
