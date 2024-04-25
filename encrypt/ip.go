@@ -25,15 +25,15 @@ func newIPKey() ([]byte, error) {
 	return key, nil
 }
 
-type IPEncrypter struct {
+type IPEncryptor struct {
 	key []byte
 }
 
-func NewIPEncrypter() *IPEncrypter {
-	return &IPEncrypter{key: []byte(ipEncryptKeyDef)}
+func NewIPEncryptor() *IPEncryptor {
+	return &IPEncryptor{key: []byte(ipEncryptKeyDef)}
 }
 
-func (enc *IPEncrypter) Encrypt(ip string) (string, error) {
+func (enc *IPEncryptor) Encrypt(ip string) (string, error) {
 	ipBytes := net.ParseIP(ip).To4()
 	if ipBytes == nil {
 		return "", ErrIPBeyondIPv4
@@ -44,7 +44,7 @@ func (enc *IPEncrypter) Encrypt(ip string) (string, error) {
 	return ipHex, nil
 }
 
-func (enc *IPEncrypter) Decrypt(ipHex string) (string, error) {
+func (enc *IPEncryptor) Decrypt(ipHex string) (string, error) {
 	if ipHex == "" {
 		return "", nil
 	}
@@ -58,11 +58,11 @@ func (enc *IPEncrypter) Decrypt(ipHex string) (string, error) {
 	return ip.String(), nil
 }
 
-func (enc *IPEncrypter) ipEncryptKey() uint64 {
+func (enc *IPEncryptor) ipEncryptKey() uint64 {
 	return enc.decodeIPUint64(enc.key)
 }
 
-func (enc *IPEncrypter) encodeIPUint64(ipUint64 uint64) []byte {
+func (enc *IPEncryptor) encodeIPUint64(ipUint64 uint64) []byte {
 	b := make([]byte, 8)
 	b[0] = byte(ipUint64 >> 56)
 	b[1] = byte(ipUint64 >> 48)
@@ -75,6 +75,6 @@ func (enc *IPEncrypter) encodeIPUint64(ipUint64 uint64) []byte {
 	return b
 }
 
-func (enc *IPEncrypter) decodeIPUint64(b []byte) uint64 {
+func (enc *IPEncryptor) decodeIPUint64(b []byte) uint64 {
 	return (uint64(b[0]) << 56) | (uint64(b[1]) << 48) | (uint64(b[2]) << 40) | (uint64(b[3]) << 32) | (uint64(b[4]) << 24) | (uint64(b[5]) << 16) | (uint64(b[6]) << 8) | uint64(b[7])
 }

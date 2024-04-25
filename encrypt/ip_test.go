@@ -36,7 +36,7 @@ func TestIpEncrypt(t *testing.T) {
 	for _, tt := range tests {
 		t.Run("test for "+tt.in, func(t *testing.T) {
 			t.Cleanup(func() {})
-			if got, err := encrypt.NewIPEncrypter().Encrypt(tt.in); err != nil {
+			if got, err := encrypt.NewIPEncryptor().Encrypt(tt.in); err != nil {
 				if tt.err == nil || err.Error() != tt.err.Error() {
 					t.Error("got err", err)
 				}
@@ -76,7 +76,7 @@ func TestIpDecrypt2(t *testing.T) {
 	for _, tt := range tests {
 		t.Run("test for "+tt.input, func(t *testing.T) {
 			t.Cleanup(func() {})
-			if got, err := encrypt.NewIPEncrypter().Decrypt(tt.input); err != nil {
+			if got, err := encrypt.NewIPEncryptor().Decrypt(tt.input); err != nil {
 				if tt.err == nil || err.Error() != tt.err.Error() {
 					t.Error("got err", err)
 				}
