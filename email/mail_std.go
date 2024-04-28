@@ -43,7 +43,7 @@ func dial(addr string) (*smtp.Client, error) {
 	return smtp.NewClient(conn, host)
 }
 
-func sendMailUsingTLS(addr string, auth smtp.Auth, from string, to []string, msg []byte) (err error) {
+func sendMailUsingTLS(addr string, auth smtp.Auth, from string, to []string, msg []byte) error {
 	c, err := dial(addr)
 	if err != nil {
 		//log.Println("Create smpt client error:", err)
