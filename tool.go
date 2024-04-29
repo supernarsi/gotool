@@ -126,3 +126,19 @@ func RandomIdx(num int) int {
 	r := rand.New(src)
 	return r.Intn(num)
 }
+
+func Difference[T ElementType](slice1, slice2 []T) []T {
+	m := make(map[T]struct{})
+	for _, item := range slice2 {
+		m[item] = struct{}{}
+	}
+
+	var diff []T
+	for _, item := range slice1 {
+		if _, exists := m[item]; !exists {
+			diff = append(diff, item)
+		}
+	}
+
+	return diff
+}
