@@ -248,3 +248,31 @@ func TestRandTasks(t *testing.T) {
 		})
 	}
 }
+
+func TestDifference(t *testing.T) {
+	tests := []struct {
+		name   string
+		inputA []uint
+		inputB []uint
+		want   []uint
+	}{
+		{"t1", []uint{1, 2, 3}, []uint{1, 2, 3}, []uint{}},
+		{"t2", []uint{2, 3}, []uint{1, 2, 3}, []uint{}},
+		{"t3", []uint{1, 2, 3}, []uint{1, 2}, []uint{3}},
+		{"t4", []uint{2, 3}, []uint{1, 2, 4}, []uint{3}},
+		{"t5", []uint{}, []uint{1, 2, 4}, []uint{}},
+		{"t6", []uint{1, 2, 3, 4}, []uint{}, []uint{1, 2, 3, 4}},
+		{"t7", []uint{1, 2, 3, 4}, []uint{}, []uint{1, 2, 3, 4}},
+	}
+
+	for _, v := range tests {
+		t.Run(v.name, func(t *testing.T) {
+			got := gotool.Difference(v.inputA, v.inputB)
+			for k, gV := range got {
+				if gV != v.want[k] {
+					t.Errorf("%s, want %v, got %v", v.name, v.want, got)
+				}
+			}
+		})
+	}
+}
