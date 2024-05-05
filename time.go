@@ -67,6 +67,15 @@ func TimeIsBeforeDateBegin(dateStr, timezone string, datetime time.Time) bool {
 	return locTime.Before(*date)
 }
 
+func TimeToStamp(dateTime *time.Time, timezone string) (int64, error) {
+	local, err := time.LoadLocation(timezone)
+	if err != nil {
+		return 0, err
+	}
+	t := time.Date(dateTime.Year(), dateTime.Month(), dateTime.Day(), dateTime.Hour(), dateTime.Minute(), dateTime.Second(), 0, local)
+	return t.Unix(), nil
+}
+
 func parseTimeToSameLoc(dateStr string, datetime time.Time, timezone string) (time1, time2 *time.Time, err error) {
 	// 解析时区
 	loc, err := time.LoadLocation(timezone)
