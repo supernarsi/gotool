@@ -160,3 +160,25 @@ func TestTimeIsBeforeDateEnd(t *testing.T) {
 		})
 	}
 }
+
+func TestTimeToStamp(t *testing.T) {
+	t1 := time.Unix(1714838400, 0)
+	tests := []struct {
+		name          string
+		inputTime     *time.Time
+		inputTimezone string
+		want          int64
+	}{
+		{"t1", &time.Time{}, "", -62135596800},
+		{"t2", &t1, tzCN, 1714838400},
+		{"t3", &t1, tzUS, 1714892400},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got, _ := gotool.TimeToStamp(tt.inputTime, tt.inputTimezone); got != tt.want {
+				t.Errorf("TimeToStamp() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
