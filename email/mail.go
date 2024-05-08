@@ -1,6 +1,9 @@
 package email
 
-import "context"
+import (
+	"context"
+	"net/mail"
+)
 
 const (
 	mailHost = ""
@@ -16,4 +19,9 @@ var defSender = ""
 
 func InitMailGoMail() *MailGoMail {
 	return &MailGoMail{}
+}
+
+func IsEmailValid(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
 }
