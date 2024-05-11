@@ -20,6 +20,11 @@ func TestIsEmailValid(t *testing.T) {
 		{"t6", "cccc+123@gmail.com", true},
 		{"t7", "@gmail.com", false},
 		{"t8", "123@gmail", true},
+		{"t9", "123@", false},
+		{"t10", "thisisnotemail", false},
+		{"t11", "this_is_email@gmail.com", true},
+		{"t12", "this_is+email@gmail.com", true},
+		{"t13", "this.is/a/email@gmail.com", true},
 	}
 
 	for _, tt := range tests {
