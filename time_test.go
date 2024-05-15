@@ -182,3 +182,34 @@ func TestTimeToStamp(t *testing.T) {
 		})
 	}
 }
+
+func TestGetUTCOffset(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  string
+		want   int
+		hasErr bool
+	}{
+		{"t1", "UTC", 0, false},
+		{"t2", "test", 0, true},
+		{"t3", "America/Los_Angeles", -7, false},
+		{"t4", "America/Cayman", -5, false},
+		{"t5", "Asia/Amman", 3, false},
+		{"t6", "Etc/GMT+8", -8, false},
+		{"t7", "Pacific/Tarawa", 12, false},
+		{"t8", "Asia/Hong_Kong", 8, false},
+		{"t9", "Australia/Sydney", 10, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got, err := gotool.GetUTCOffset(tt.input); err != nil {
+				if !tt.hasErr {
+					t.Errorf("got error %v", err)
+				}
+			} else if got != tt.want || tt.hasErr {
+				t.Errorf("got result %v, want %v, hasErr %v", got, tt.want, tt.hasErr)
+			}
+		})
+	}
+}

@@ -76,6 +76,18 @@ func TimeToStamp(dateTime *time.Time, timezone string) (int64, error) {
 	return t.Unix(), nil
 }
 
+func GetUTCOffset(timezone string) (int, error) {
+	loc, err := time.LoadLocation(timezone)
+	if err != nil {
+		return 0, err
+	}
+
+	now := time.Now().In(loc)
+	_, offset := now.Zone()
+
+	return offset / 3600, nil
+}
+
 func parseTimeToSameLoc(dateStr string, datetime time.Time, timezone string) (time1, time2 *time.Time, err error) {
 	// 解析时区
 	loc, err := time.LoadLocation(timezone)
