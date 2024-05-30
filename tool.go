@@ -40,6 +40,17 @@ func MergeMaps(maps ...map[string]interface{}) map[string]interface{} {
 	return result
 }
 
+// MergeMapsAny 合并多个 map，适用于所有类型的 key 和 value
+func MergeMapsAny[K comparable, V any](maps ...map[K]V) map[K]V {
+	result := make(map[K]V)
+	for _, m := range maps {
+		for k, v := range m {
+			result[k] = v
+		}
+	}
+	return result
+}
+
 // InArray 判断元素是否在数组切片中
 func InArray[T ElementType](target T, arr []T) bool {
 	for _, item := range arr {
