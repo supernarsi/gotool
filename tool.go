@@ -1,9 +1,12 @@
 package gotool
 
 import (
+	"encoding/binary"
 	"math/rand"
 	"reflect"
 	"time"
+
+	"github.com/spaolacci/murmur3"
 )
 
 type eleInt interface {
@@ -152,4 +155,26 @@ func Difference[T ElementType](slice1, slice2 []T) []T {
 	}
 
 	return diff
+}
+
+func AssignGroup(id uint32, seed uint32) uint32 {
+	// 将用户 ID 转换为字节数组
+	userIDBytes := make([]byte, 4)
+	binary.LittleEndian.PutUint32(userIDBytes, id)
+
+	// 创建带 seed 的 Murmur3 哈希函数
+	hashDealer := murmur3.New32WithSeed(seed)
+	// 写入 id 字节数据
+	_, err := hashDealer.Write(userIDBytes)
+	if err != nil {
+		return 0
+	}
+
+	// 计算哈希值
+	hashValue := hashDealer.Sum32()
+
+	// 将哈希值映射到 0 到 99 之间的一个组
+	group := hashValue % 100
+
+	return group
 }
