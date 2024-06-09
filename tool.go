@@ -178,3 +178,24 @@ func AssignGroup(id uint32, seed uint32) uint32 {
 
 	return group
 }
+
+func FloatRationToInt(input []float32) []int {
+	var total float32
+	for _, value := range input {
+		total += value
+	}
+
+	// 创建一个结果数组用于存储百分比值
+	result := make([]int, len(input))
+	var sum int
+	for i, value := range input {
+		percentage := (value / total) * 100
+		result[i] = int(percentage)
+		sum += result[i]
+	}
+	// 调整最后一个元素以确保总和为100
+	if sum != 100 {
+		result[len(result)-1] += 100 - sum
+	}
+	return result
+}
