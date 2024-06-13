@@ -3,6 +3,7 @@ package gotool
 import (
 	"crypto/rand"
 	"fmt"
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -108,7 +109,7 @@ func RandomString(n int) string {
 }
 
 // UniInvCodeLen6ByUID 根据 uid 生成 6 位的唯一码（可逆）
-func UniInvCodeLen6ByUID(uid uint64) string {
+func UniInvCodeLen6ByUID(uid uint64, baseChars []byte) string {
 	l := 6
 	// 放大 + 加盐
 	uid = uid*PRIME1 + SALT
@@ -119,17 +120,27 @@ func UniInvCodeLen6ByUID(uid uint64) string {
 	// 扩散
 	for i := 0; i < l; i++ {
 		// 获取 62 进制的每一位值
-		slIdx[i] = byte(uid % uint64(len(baseChars62)))
+		slIdx[i] = byte(uid % uint64(len(baseChars)))
 		// 其他位与个位加和再取余（让个位的变化影响到所有位）
-		slIdx[i] = (slIdx[i] + byte(i)*slIdx[0]) % byte(len(baseChars62))
+		slIdx[i] = (slIdx[i] + byte(i)*slIdx[0]) % byte(len(baseChars))
 		// 相当于右移一位（62进制）
-		uid = uid / uint64(len(baseChars62))
+		uid = uid / uint64(len(baseChars))
 	}
 
 	// 混淆
 	for i := 0; i < l; i++ {
 		idx := (byte(i) * PRIME2) % byte(l)
-		code = append(code, rune(baseChars62[slIdx[idx]]))
+		code = append(code, rune(baseChars[slIdx[idx]]))
+	}
+	return string(code)
+}
+
+func SampleGenerateCode(codeLength int) string {
+	var letters = []rune("ABCDEFGHJKMNPQRSTUVWXYZ")
+	code := make([]rune, codeLength)
+	for i := range code {
+		index, _ := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		code[i] = letters[index.Int64()]
 	}
 	return string(code)
 }
