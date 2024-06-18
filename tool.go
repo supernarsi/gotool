@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"reflect"
 	"time"
+	_ "time/tzdata" // use built-in timezone database
 
 	"github.com/spaolacci/murmur3"
 )

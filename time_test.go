@@ -11,6 +11,7 @@ const (
 	tzVN = "Asia/Ho_Chi_Minh"
 	tzCN = "Asia/Shanghai"
 	tzUS = "America/Los_Angeles"
+	tzCJ = "America/Ciudad_Juarez"
 )
 
 var (
@@ -172,6 +173,7 @@ func TestTimeToStamp(t *testing.T) {
 		{"t1", &time.Time{}, "", -62135596800},
 		{"t2", &t1, tzCN, 1714838400},
 		{"t3", &t1, tzUS, 1714892400},
+		{"t4", &t1, tzCJ, 1714888800},
 	}
 
 	for _, tt := range tests {

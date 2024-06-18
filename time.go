@@ -3,6 +3,7 @@ package gotool
 import (
 	"errors"
 	"time"
+	_ "time/tzdata" // use built-in timezone database
 )
 
 func LocTimestamp(date time.Time, timezone string) (sTimestamp, eTimestamp int64) {
