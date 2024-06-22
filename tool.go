@@ -180,7 +180,7 @@ func AssignGroup(id uint32, seed uint32) uint32 {
 	return group
 }
 
-func FloatRationToInt(input []float32) []int {
+func FloatRatioToInt(input []float32) []int {
 	var total float32
 	for _, value := range input {
 		total += value

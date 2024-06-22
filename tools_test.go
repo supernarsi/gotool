@@ -323,3 +323,29 @@ func TestAssignGroup(t *testing.T) {
 		})
 	}
 }
+
+func TestFloatRatioToInt(t *testing.T) {
+	tests := []struct {
+		name  string
+		input []float32
+		want  []int
+	}{
+		{name: "t1", input: []float32{1, 2, 3}, want: []int{16, 33, 51}},
+		{name: "t2", input: []float32{1, 1, 1, 1}, want: []int{25, 25, 25, 25}},
+		{name: "t3", input: []float32{0.1, 0.1, 0.1, 0.1}, want: []int{25, 25, 25, 25}},
+		{name: "t4", input: []float32{0.5, 0.5}, want: []int{50, 50}},
+		{name: "t5", input: []float32{0.5, 0, 5}, want: []int{9, 0, 91}},
+		{name: "t5", input: []float32{0.5, 1, 2, 3, 4, 5, 10, 0, 0.1, 0.2, 0.3}, want: []int{1, 3, 7, 11, 15, 19, 38, 0, 0, 0, 6}},
+	}
+	for _, v := range tests {
+		t.Run(v.name, func(t *testing.T) {
+			got := gotool.FloatRatioToInt(v.input)
+			for k, gotV := range got {
+				if gotV != v.want[k] {
+					t.Errorf("%s, want %v, got %v", v.name, v.want, got)
+					break
+				}
+			}
+		})
+	}
+}
