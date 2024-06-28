@@ -380,3 +380,21 @@ func TestListToMap(t *testing.T) {
 		})
 	}
 }
+
+func TestLottery(t *testing.T) {
+	tests := []struct {
+		name  string
+		input []int
+		want  int
+	}{
+		{"t1", []int{3}, 0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := gotool.Lottery(tt.input); got != tt.want {
+				t.Errorf("Lottery() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
