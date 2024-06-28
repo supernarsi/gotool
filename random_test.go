@@ -62,3 +62,87 @@ func BenchmarkRandomUniCode(b *testing.B) {
 		gotool.RandomUniCode(false, false)
 	}
 }
+
+func TestSampleGenerateCode(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   int
+		wantLen int
+	}{
+		{"t1", 6, 6},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := gotool.SampleGenerateCode(tt.input); len(got) != tt.wantLen {
+				t.Errorf("SampleGenerateCode() = %v, want %v", got, tt.wantLen)
+			}
+		})
+	}
+}
+
+func TestUniInvCodeLen6ByUID(t *testing.T) {
+	baseChars32 := []byte{
+		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+		'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R',
+		'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+	}
+	baseChars62 := []byte{
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+		'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+		'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+		'u', 'v', 'w', 'x', 'y', 'z',
+		'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+		'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+		'U', 'V', 'W', 'X', 'Y', 'Z',
+	}
+	tests := []struct {
+		name  string
+		input uint64
+		want  string
+	}{
+		{name: "t1", input: 0, want: "rflqBR"},
+		{name: "t2", input: 1, want: "uuxzHU"},
+		{name: "t3", input: 10000, want: "jBP2tx"},
+		{name: "t4", input: 1000000, want: "xJJVno"},
+		{name: "t5", input: 1234567, want: "yON1mt"},
+		{name: "t6", input: 9999999, want: "mQ3dj9"},
+		{name: "t7", input: 10000001, want: "skrvvf"},
+		{name: "t8", input: 12332112, want: "xJLd1o"},
+		{name: "t9", input: 12332113, want: "AYXm7r"},
+		{name: "t10", input: 12332114, want: "Dd9vdu"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := gotool.UniInvCodeLen6ByUID(tt.input, baseChars62); got != tt.want {
+				t.Errorf("UniInvCodeLen6ByUID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+
+	tests2 := []struct {
+		name  string
+		input uint64
+		want  string
+	}{
+		{name: "t1", input: 0, want: "DSQZFP"},
+		{name: "t2", input: 1, want: "GHCJMS"},
+		{name: "t3", input: 10000, want: "DSQCKR"},
+		{name: "t4", input: 1000000, want: "DSZAFX"},
+		{name: "t5", input: 1234567, want: "ABPUXM"},
+		{name: "t6", input: 9999999, want: "AEXBCU"},
+		{name: "t7", input: 10000001, want: "GLXVQA"},
+		{name: "t8", input: 12332112, want: "DWGNMH"},
+		{name: "t9", input: 12332113, want: "GMUXTL"},
+		{name: "t10", input: 12332114, want: "KCGGZP"},
+	}
+
+	for _, tt := range tests2 {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := gotool.UniInvCodeLen6ByUID(tt.input, baseChars32); got != tt.want {
+				t.Errorf("UniInvCodeLen6ByUID() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
