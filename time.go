@@ -90,12 +90,10 @@ func GetUTCOffset(timezone string) (int, error) {
 	return offset / 3600, nil
 }
 
-func CheckTimeIsInPeriod(checkTime int64, momentMin uint, momentMax int, now int64) bool {
-	// 如果限定了展示时机，判断是否符合展示时机
-	if momentMin < 0 || (momentMax >= 0 && momentMax < int(momentMin)) {
+func CheckTimeIsInPeriod(checkTime int64, momentMin, momentMax int, now int64) bool {
+	if momentMin < 0 || (momentMax >= 0 && momentMax < momentMin) {
 		return false
 	}
-	// 注册时间需要在 showSTime ~ showETime 范围内
 	showSTime := checkTime + int64(momentMin)*86400
 	var showETime int64 = math.MaxInt64
 	if momentMax >= 0 {

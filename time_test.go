@@ -215,3 +215,27 @@ func TestGetUTCOffset(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckTimeIsInPeriod(t *testing.T) {
+	tests := []struct {
+		name    string
+		inputP1 int64
+		inputP2 int
+		inputP3 int
+		inputP4 int64
+		want    bool
+	}{
+		{"t1", 0, 0, 1, 0, true},
+		{"t2", 1720370225, 0, 1, 1720370200, false},
+		{"t2", 1720370225, 0, 1, 1720370290, true},
+		{"t2", 1720370225, 0, 1, 1720471290, false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := gotool.CheckTimeIsInPeriod(tt.inputP1, tt.inputP2, tt.inputP3, tt.inputP4); got != tt.want {
+				t.Errorf("CheckTimeIsInPeriod() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
