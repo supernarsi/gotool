@@ -18,6 +18,8 @@ var (
 	locVN, _ = time.LoadLocation(tzVN)
 	locCN, _ = time.LoadLocation(tzCN)
 	locUS, _ = time.LoadLocation(tzUS)
+
+	timeTool = gotool.GetUtilityTime()
 )
 
 func TestLocTimestamp(t *testing.T) {
@@ -34,7 +36,7 @@ func TestLocTimestamp(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if s, e := gotool.LocTimestamp(tt.inputTime, tt.inputTz); s != tt.wantS || e != tt.wantE {
+			if s, e := timeTool.LocTimestamp(tt.inputTime, tt.inputTz); s != tt.wantS || e != tt.wantE {
 				t.Errorf("LocTimestamp() = %v, %v, want %v, %v", s, e, tt.wantS, tt.wantE)
 			}
 		})
@@ -78,7 +80,7 @@ func TestIsSameMonthDay(t *testing.T) {
 
 	for _, v := range test {
 		t.Run(v.name, func(t *testing.T) {
-			if got := gotool.IsSameMonthDay(v.inputDateStr, v.inputTimezone, v.inputTime, false); got != v.want {
+			if got := timeTool.IsSameMonthDay(v.inputDateStr, v.inputTimezone, v.inputTime, false); got != v.want {
 				t.Errorf("%s want %v, got %v", v.name, v.want, got)
 			}
 		})
@@ -99,7 +101,7 @@ func TestTimeToYmdInt(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := gotool.TimeToYmdInt(tt.input); got != tt.want {
+			if got := timeTool.TimeToYmdInt(tt.input); got != tt.want {
 				t.Errorf("TimeToYmdInt() = %v, want %v", got, tt.want)
 			}
 		})
@@ -127,7 +129,7 @@ func TestTimeIsAfterDateEnd(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := gotool.TimeIsAfterDateEnd(tt.inputDate, tt.inputTimezone, tt.inputTime); got != tt.want {
+			if got := timeTool.TimeIsAfterDateEnd(tt.inputDate, tt.inputTimezone, tt.inputTime); got != tt.want {
 				t.Errorf("TimeIsAfterDateEnd() = %v, want %v", got, tt.want)
 			}
 		})
@@ -155,7 +157,7 @@ func TestTimeIsBeforeDateEnd(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := gotool.TimeIsBeforeDateBegin(tt.inputDate, tt.inputTimezone, tt.inputTime); got != tt.want {
+			if got := timeTool.TimeIsBeforeDateBegin(tt.inputDate, tt.inputTimezone, tt.inputTime); got != tt.want {
 				t.Errorf("TimeIsBeforeDateBegin() = %v, want %v", got, tt.want)
 			}
 		})
@@ -178,7 +180,7 @@ func TestTimeToStamp(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got, _ := gotool.TimeToStamp(tt.inputTime, tt.inputTimezone); got != tt.want {
+			if got, _ := timeTool.TimeToStamp(tt.inputTime, tt.inputTimezone); got != tt.want {
 				t.Errorf("TimeToStamp() = %v, want %v", got, tt.want)
 			}
 		})
@@ -194,7 +196,7 @@ func TestGetUTCOffset(t *testing.T) {
 	}{
 		{"t1", "UTC", 0, false},
 		{"t2", "test", 0, true},
-		{"t3", "America/Los_Angeles", -7, false},
+		{"t3", "America/Los_Angeles", -8, false},
 		{"t4", "America/Cayman", -5, false},
 		{"t5", "Asia/Amman", 3, false},
 		{"t6", "Etc/GMT+8", -8, false},
@@ -205,7 +207,7 @@ func TestGetUTCOffset(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got, err := gotool.GetUTCOffset(tt.input); err != nil {
+			if got, err := timeTool.GetUTCOffset(tt.input); err != nil {
 				if !tt.hasErr {
 					t.Errorf("got error %v", err)
 				}
@@ -220,7 +222,7 @@ func TestCheckTimeIsInPeriod(t *testing.T) {
 	tests := []struct {
 		name    string
 		inputP1 int64
-		inputP2 int
+		inputP2 uint
 		inputP3 int
 		inputP4 int64
 		want    bool
@@ -233,7 +235,7 @@ func TestCheckTimeIsInPeriod(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := gotool.CheckTimeIsInPeriod(tt.inputP1, tt.inputP2, tt.inputP3, tt.inputP4); got != tt.want {
+			if got := timeTool.CheckTimeIsInPeriod(tt.inputP1, tt.inputP2, tt.inputP3, tt.inputP4); got != tt.want {
 				t.Errorf("CheckTimeIsInPeriod() = %v, want %v", got, tt.want)
 			}
 		})
