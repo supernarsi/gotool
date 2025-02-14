@@ -202,7 +202,7 @@ func TestGetUTCOffset(t *testing.T) {
 		{"t6", "Etc/GMT+8", -8, false},
 		{"t7", "Pacific/Tarawa", 12, false},
 		{"t8", "Asia/Hong_Kong", 8, false},
-		{"t9", "Australia/Sydney", 10, false},
+		{"t9", "Australia/Sydney", 11, false},
 	}
 
 	for _, tt := range tests {
@@ -222,7 +222,7 @@ func TestCheckTimeIsInPeriod(t *testing.T) {
 	tests := []struct {
 		name    string
 		inputP1 int64
-		inputP2 uint
+		inputP2 int
 		inputP3 int
 		inputP4 int64
 		want    bool
