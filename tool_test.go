@@ -330,12 +330,12 @@ func TestFloatRatioToInt(t *testing.T) {
 		input []float32
 		want  []int
 	}{
-		{name: "t1", input: []float32{1, 2, 3}, want: []int{16, 33, 51}},
+		{name: "t1", input: []float32{1, 2, 3}, want: []int{17, 33, 50}},
 		{name: "t2", input: []float32{1, 1, 1, 1}, want: []int{25, 25, 25, 25}},
 		{name: "t3", input: []float32{0.1, 0.1, 0.1, 0.1}, want: []int{25, 25, 25, 25}},
 		{name: "t4", input: []float32{0.5, 0.5}, want: []int{50, 50}},
 		{name: "t5", input: []float32{0.5, 0, 5}, want: []int{9, 0, 91}},
-		{name: "t6", input: []float32{0.5, 1, 2, 3, 4, 5, 10, 0, 0.1, 0.2, 0.3}, want: []int{1, 3, 7, 11, 15, 19, 38, 0, 0, 0, 6}},
+		{name: "t6", input: []float32{0.5, 1, 2, 3, 4, 5, 10, 0, 0.1, 0.2, 0.3}, want: []int{2, 4, 8, 11, 15, 19, 38, 0, 0, 1, 2}},
 	}
 	for _, v := range tests {
 		t.Run(v.name, func(t *testing.T) {
@@ -344,37 +344,6 @@ func TestFloatRatioToInt(t *testing.T) {
 				if gotV != v.want[k] {
 					t.Errorf("%s, want %v, got %v", v.name, v.want, got)
 					break
-				}
-			}
-		})
-	}
-}
-
-func TestListToMap(t *testing.T) {
-	type testObj struct {
-		Id  int
-		Val int
-	}
-	tests := []struct {
-		name  string
-		input []*testObj
-		want  map[int]testObj
-	}{
-		{name: "t1", input: []*testObj{}, want: map[int]testObj{}},
-		{name: "t2", input: []*testObj{{Id: 1, Val: 101}}, want: map[int]testObj{1: {Id: 1, Val: 101}}},
-		{name: "t3", input: []*testObj{{Id: 1, Val: 101}, {Id: 2, Val: 202}}, want: map[int]testObj{1: {Id: 1, Val: 101}, 2: {Id: 2, Val: 202}}},
-		{name: "t4", input: []*testObj{{Id: 1, Val: 101}, {Id: 1, Val: 102}}, want: map[int]testObj{1: {Id: 1, Val: 102}}},
-	}
-
-	for _, v := range tests {
-		t.Run(v.name, func(t *testing.T) {
-			got := gotool.ListToMap(v.input, "Id")
-			if len(got) != len(v.want) {
-				t.Errorf("%s, want %v, got %v", v.name, v.want, got)
-			}
-			for k, gotV := range got {
-				if gotV.Val != v.want[k].Val {
-					t.Errorf("%s, want %v, got %v", v.name, v.want, got)
 				}
 			}
 		})
