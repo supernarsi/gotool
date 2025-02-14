@@ -6,36 +6,37 @@ import (
 )
 
 // GoForeach 使用协程池处理循环
-// -ctx: 上下文
-// -arr: 待循环处理的数据（任意类型的切片）
-// -proc: 处理每个元素的逻辑函数
-// -def: 协程处理异常时返回的默认值
-// -nu: 协程池容量
+// - ctx: 上下文
+// - arr: 待循环处理的数据（任意类型的切片）
+// - proc: 处理每个元素的逻辑函数
+// - def: 协程处理异常时返回的默认值
+// - nu: 协程池容量
 func GoForeach[T, R any](ctx context.Context, arr []T, proc func(c context.Context, i T) (R, error), def R, nu int) []R {
-	ch := make(chan struct{}, nu)
-	wg := sync.WaitGroup{}
-	total := len(arr)
-	result := make([]R, total)
-	if total == 0 {
-		return result
+	if len(arr) == 0 {
+		return nil
 	}
 
-	wg.Add(total)
-	for i := range arr {
+	var (
+		ch     = make(chan struct{}, nu)
+		wg     sync.WaitGroup
+		result = make([]R, len(arr))
+	)
+
+	wg.Add(len(arr))
+	for i, v := range arr {
 		ch <- struct{}{}
-		go func(k int) {
+		go func(index int, value T) {
 			defer func() {
 				<-ch
 				wg.Done()
 			}()
 
-			// 执行用户逻辑
-			if val, err := proc(ctx, arr[k]); err != nil {
-				result[k] = def
+			if val, err := proc(ctx, value); err != nil {
+				result[index] = def
 			} else {
-				result[k] = val
+				result[index] = val
 			}
-		}(i)
+		}(i, v)
 	}
 
 	wg.Wait()
