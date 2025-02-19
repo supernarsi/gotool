@@ -4,21 +4,23 @@ func DateStringEncrypt(date string) string {
 	if len(date) != 10 {
 		return ""
 	}
-	var sigChar byte
-	lastCharAsc := date[len(date)-1]
-	lastCharNum := lastCharAsc - '0'
+
+	lastChar := date[len(date)-1]
+	lastCharNum := lastChar - '0'
 	offsetNum := lastCharNum%3 + 1
-	var offsetAsc = offsetNum + '0'
-	encDate := make([]byte, 1, len(date))
-	encDate[0] = offsetAsc
+	offsetChar := byte(offsetNum + '0')
+
+	encDate := make([]byte, 0, len(date)+1)
+	encDate = append(encDate, offsetChar)
+
 	for i := 0; i < len(date); i++ {
-		if !posIsSep(i) {
-			sigChar = numToChar(date[i], offsetNum)
+		if posIsSep(i) {
+			encDate = append(encDate, lastChar)
 		} else {
-			sigChar = lastCharAsc
+			encDate = append(encDate, numToChar(date[i], offsetNum))
 		}
-		encDate = append(encDate, sigChar)
 	}
+
 	return string(encDate)
 }
 
@@ -26,22 +28,26 @@ func DateDecrypt(encryptStr string) string {
 	if len(encryptStr) != 11 {
 		return ""
 	}
-	offset := encryptStr[0]
-	if !offsetCharIsSingleNum(offset) {
+
+	offsetChar := encryptStr[0]
+	if !isSingleDigit(offsetChar) {
 		return ""
 	}
-	offset -= '0'
-	var decDate []byte
+
+	offset := offsetChar - '0'
+	decDate := make([]byte, 0, len(encryptStr)-1)
+
 	for i := 1; i < len(encryptStr); i++ {
 		if posIsSep(i - 1) {
 			decDate = append(decDate, '-')
 		} else {
-			if encryptStr[i] > 'Z' || !charIsUpperLetter(encryptStr[i]) {
+			if !isUpperLetter(encryptStr[i]) {
 				return ""
 			}
 			decDate = append(decDate, charToNum(encryptStr[i], offset))
 		}
 	}
+
 	return string(decDate)
 }
 
@@ -53,14 +59,14 @@ func charToNum(letterChar byte, offset byte) byte {
 	return letterChar - 'A' + '0' - offset
 }
 
-func charIsUpperLetter(letter byte) bool {
-	return letter >= 'A' && letter <= 'Z'
+func isUpperLetter(char byte) bool {
+	return char >= 'A' && char <= 'Z'
+}
+
+func isSingleDigit(char byte) bool {
+	return char >= '0' && char <= '9'
 }
 
 func posIsSep(pos int) bool {
 	return pos == 4 || pos == 7
-}
-
-func offsetCharIsSingleNum(offset byte) bool {
-	return offset >= '0' && offset <= '9'
 }
