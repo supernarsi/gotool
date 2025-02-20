@@ -8,7 +8,7 @@ func DateStringEncrypt(date string) string {
 	lastChar := date[len(date)-1]
 	lastCharNum := lastChar - '0'
 	offsetNum := lastCharNum%3 + 1
-	offsetChar := byte(offsetNum + '0')
+	offsetChar := offsetNum + '0'
 
 	encDate := make([]byte, 0, len(date)+1)
 	encDate = append(encDate, offsetChar)

@@ -1,6 +1,7 @@
 package encrypt_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/supernarsi/gotool/encrypt"
@@ -57,7 +58,7 @@ func TestIpDecrypt2(t *testing.T) {
 		err   error
 	}
 	tests := []nT{
-		{"", "", nil},
+		{"", "", errors.New("empty encrypted IP string")},
 		{"127.0.0.1", "724e6433d351713a", nil},
 		{"127.0.0.2", "724e6433d351713b", nil},
 		{"127.0.0.3", "724e6433d351713c", nil},
@@ -78,7 +79,7 @@ func TestIpDecrypt2(t *testing.T) {
 			t.Cleanup(func() {})
 			if got, err := encrypt.NewIPEncryptor().Decrypt(tt.input); err != nil {
 				if tt.err == nil || err.Error() != tt.err.Error() {
-					t.Error("got err", err)
+					t.Error("got err: ", err)
 				}
 				if tt.want != "" {
 					t.Error("want should be empty, got", tt.want)
