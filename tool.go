@@ -5,6 +5,7 @@ import (
 	"math"
 	"math/rand"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/spaolacci/murmur3"
@@ -188,4 +189,63 @@ func FloatRatioToInt(input []float32) []int {
 		result[len(result)-1] += diff
 	}
 	return result
+}
+
+// MaskNickname hide nickname
+func MaskNickname(nickname string) string {
+	if nickname == "" {
+		return ""
+	}
+
+	runes := []rune(nickname)
+	if len(runes) == 0 {
+		return ""
+	}
+
+	// 计算前两个字符的总宽度
+	width := 0
+	count := 0
+	for _, r := range runes {
+		if width >= 2 {
+			break
+		}
+		if isMultibyte(r) {
+			width += 2 // 多字节字符宽度为2
+		} else {
+			width += 1 // 单字节字符宽度为1
+		}
+		count++
+	}
+
+	// 根据总宽度决定显示的字符数
+	var visible int
+	if width == 1 {
+		visible = 1 // 只有一个单字节字符
+	} else if width == 2 {
+		visible = count // 两个单字节或一个多字节
+	} else {
+		// 超过2宽度时，取第一个字符（无论单/多字节）
+		visible = 1
+	}
+
+	length := len(runes) - visible
+	if length > 3 {
+		length = 3
+	}
+
+	return string(runes[:visible]) + strings.Repeat("*", length)
+}
+
+// 判断字符是否为多字节字符
+func isMultibyte(r rune) bool {
+	// 排除ASCII字符（单字节）
+	if r <= 127 {
+		return false
+	}
+	// 排除常见半角符号
+	if r >= 0xFF01 && r <= 0xFF5E {
+		return false
+	}
+	// 其他视为多字节
+	return true
 }
