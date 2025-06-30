@@ -191,7 +191,9 @@ func FloatRatioToInt(input []float32) []int {
 	return result
 }
 
-// MaskNickname hide nickname
+// MaskNickname 隐藏昵称
+// - 单字节字符（如英文、数字）显示前两位，其余用星号替换
+// - 多字节字符（如中文、日文、韩文）显示第一位，其余用星号替换
 func MaskNickname(nickname string) string {
 	if nickname == "" {
 		return ""
@@ -202,50 +204,46 @@ func MaskNickname(nickname string) string {
 		return ""
 	}
 
-	// 计算前两个字符的总宽度
-	width := 0
-	count := 0
-	for _, r := range runes {
-		if width >= 2 {
-			break
-		}
-		if isMultibyte(r) {
-			width += 2 // 多字节字符宽度为2
-		} else {
-			width += 1 // 单字节字符宽度为1
-		}
-		count++
+	// 如果只有一个字符，直接返回
+	if len(runes) == 1 {
+		return string(runes)
 	}
 
-	// 根据总宽度决定显示的字符数
+	// 检查第一个字符的类型
+	firstCharIsMultibyte := IsMultibyte(runes[0])
+
 	var visible int
-	if width == 1 {
-		visible = 1 // 只有一个单字节字符
-	} else if width == 2 {
-		visible = count // 两个单字节或一个多字节
-	} else {
-		// 超过2宽度时，取第一个字符（无论单/多字节）
+	if firstCharIsMultibyte {
+		// 多字节字符：显示第一位
 		visible = 1
+	} else {
+		// 单字节字符：显示前两位
+		visible = 2
+		if visible > len(runes) {
+			visible = len(runes)
+		}
 	}
 
-	length := len(runes) - visible
-	if length > 3 {
-		length = 3
+	// 计算需要隐藏的字符数
+	hiddenLength := len(runes) - visible
+	if hiddenLength > 3 {
+		hiddenLength = 3
 	}
 
-	return string(runes[:visible]) + strings.Repeat("*", length)
+	// 如果不需要隐藏任何字符，直接返回原字符串
+	if hiddenLength <= 0 {
+		return string(runes[:visible])
+	}
+
+	return string(runes[:visible]) + strings.Repeat("*", hiddenLength)
 }
 
-// 判断字符是否为多字节字符
-func isMultibyte(r rune) bool {
-	// 排除ASCII字符（单字节）
+// IsMultibyte 判断字符是否为多字节字符
+func IsMultibyte(r rune) bool {
+	// ASCII字符（单字节）
 	if r <= 127 {
 		return false
 	}
-	// 排除常见半角符号
-	if r >= 0xFF01 && r <= 0xFF5E {
-		return false
-	}
-	// 其他视为多字节
+	// 其他字符（包括全角字符、中文、日文、韩文、emoji等）视为多字节
 	return true
 }

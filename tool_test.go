@@ -367,3 +367,224 @@ func TestLottery(t *testing.T) {
 		})
 	}
 }
+
+func TestMaskNickname(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{"空字符串", "", ""},
+		{"单个ASCII字符", "a", "a"},
+		{"两个ASCII字符", "ab", "ab"},
+		{"三个ASCII字符", "abc", "ab*"},
+		{"四个ASCII字符", "abcd", "ab**"},
+		{"五个ASCII字符", "abcde", "ab***"},
+		{"单个中文字符", "中", "中"},
+		{"两个中文字符", "中文", "中*"},
+		{"三个中文字符", "中文名", "中**"},
+		{"四个中文字符", "中文名字", "中***"},
+		{"五个中文字符", "中文名字啊", "中***"},
+		{"中英混合-中英", "中a", "中*"},
+		{"中英混合-英中", "a中", "a中"},
+		{"中英混合-中英中", "中a中", "中**"},
+		{"中英混合-英中英", "a中a", "a中*"},
+		{"全角字符", "ＡＢＣ", "Ａ**"},
+		{"全角字符混合", "ＡＢＣＤ", "Ａ***"},
+		{"emoji表情", "😀😃😄", "😀**"},
+		{"emoji和文字混合", "😀中文", "😀**"},
+		{"特殊符号", "!@#$%", "!@***"},
+		{"数字", "12345", "12***"},
+		{"空格", "a b c", "a ***"},
+		{"制表符", "a\tb\tc", "a\t***"},
+		{"换行符", "a\nb\nc", "a\n***"},
+		{"日文字符", "あいう", "あ**"},
+		{"韩文字符", "가나다", "가**"},
+		{"混合字符-英中日", "a中b", "a中*"},
+		{"混合字符-中日英", "中a日", "中**"},
+		{"全角数字", "１２３", "１**"},
+		{"全角字母", "ＡＢＣＤＥ", "Ａ***"},
+		{"全角符号", "！＠＃", "！**"},
+		{"边界情况-单字节两个字符", "ab", "ab"},
+		{"边界情况-多字节两个字符", "中文", "中*"},
+		{"边界情况-单字节三个字符", "abc", "ab*"},
+		{"边界情况-多字节三个字符", "中文名", "中**"},
+		{"长字符串-单字节", "abcdefghijklmnop", "ab***"},
+		{"长字符串-多字节", "中文名字很长很长很长", "中***"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := gotool.MaskNickname(tt.input)
+			if result != tt.expected {
+				t.Errorf("MaskNickname(%q) = %q, want %q", tt.input, result, tt.expected)
+			}
+		})
+	}
+}
+
+func TestIsMultibyte(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    rune
+		expected bool
+	}{
+		{
+			name:     "ASCII字符",
+			input:    'a',
+			expected: false,
+		},
+		{
+			name:     "ASCII数字",
+			input:    '1',
+			expected: false,
+		},
+		{
+			name:     "ASCII符号",
+			input:    '!',
+			expected: false,
+		},
+		{
+			name:     "ASCII空格",
+			input:    ' ',
+			expected: false,
+		},
+		{
+			name:     "ASCII制表符",
+			input:    '\t',
+			expected: false,
+		},
+		{
+			name:     "ASCII换行符",
+			input:    '\n',
+			expected: false,
+		},
+		{
+			name:     "中文字符",
+			input:    '中',
+			expected: true,
+		},
+		{
+			name:     "日文字符",
+			input:    'あ',
+			expected: true,
+		},
+		{
+			name:     "韩文字符",
+			input:    '가',
+			expected: true,
+		},
+		{
+			name:     "emoji表情",
+			input:    '😀',
+			expected: true,
+		},
+		{
+			name:     "全角字符-字母",
+			input:    'Ａ',
+			expected: true,
+		},
+		{
+			name:     "全角字符-数字",
+			input:    '１',
+			expected: true,
+		},
+		{
+			name:     "全角字符-符号",
+			input:    '！',
+			expected: true,
+		},
+		{
+			name:     "全角字符-空格",
+			input:    '　',
+			expected: true,
+		},
+		{
+			name:     "边界值-ASCII最大值",
+			input:    127,
+			expected: false,
+		},
+		{
+			name:     "边界值-ASCII最大值+1",
+			input:    128,
+			expected: true,
+		},
+		{
+			name:     "边界值-全角字符开始",
+			input:    0xFF01,
+			expected: true,
+		},
+		{
+			name:     "边界值-全角字符结束",
+			input:    0xFF5E,
+			expected: true,
+		},
+		{
+			name:     "边界值-全角字符结束+1",
+			input:    0xFF5F,
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := gotool.IsMultibyte(tt.input)
+			if result != tt.expected {
+				t.Errorf("isMultibyte(%q) = %v, want %v", string(tt.input), result, tt.expected)
+			}
+		})
+	}
+}
+
+// BenchmarkMaskNickname 性能测试
+func BenchmarkMaskNickname(b *testing.B) {
+	testCases := []string{
+		"",
+		"a",
+		"ab",
+		"abc",
+		"abcd",
+		"abcde",
+		"中",
+		"中文",
+		"中文名",
+		"中文名字",
+		"中a",
+		"a中",
+		"中a中",
+		"a中a",
+		"ＡＢＣ",
+		"ＡＢＣＤ",
+		"😀😃😄",
+		"😀中文",
+		"!@#$%",
+		"12345",
+		"a b c",
+		"a\tb\tc",
+		"a\nb\nc",
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for _, input := range testCases {
+			gotool.MaskNickname(input)
+		}
+	}
+}
+
+// BenchmarkIsMultibyte 性能测试
+func BenchmarkIsMultibyte(b *testing.B) {
+	testCases := []rune{
+		'a', '1', '!', ' ', '\t', '\n',
+		'中', 'あ', '가', '😀',
+		'Ａ', '１', '！', '　',
+		127, 128, 0xFF01, 0xFF5E, 0xFF5F,
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for _, input := range testCases {
+			gotool.IsMultibyte(input)
+		}
+	}
+}
