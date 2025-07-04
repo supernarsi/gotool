@@ -247,3 +247,33 @@ func IsMultibyte(r rune) bool {
 	// 其他字符（包括全角字符、中文、日文、韩文、emoji等）视为多字节
 	return true
 }
+
+func CalSwitchRemain(lastTime int, cd int) int {
+	now := int(time.Now().Unix())
+	remain := lastTime + cd - now
+	if remain < 0 {
+		return 0
+	}
+	return remain
+}
+
+func GetConstellation(timestamp int64) uint {
+	t := time.Unix(timestamp, 0)
+	month := int(t.Month())
+	day := t.Day()
+
+	// 星座开始日期
+	constellations := [][]int{
+		{12, 22}, {1, 20}, {2, 19}, {3, 21}, {4, 20}, {5, 21},
+		{6, 22}, {7, 23}, {8, 23}, {9, 23}, {10, 24}, {11, 23},
+	}
+
+	for i := 0; i < 12; i++ {
+		nextIndex := (i + 1) % 12
+		if (month > constellations[i][0] || (month == constellations[i][0] && day >= constellations[i][1])) &&
+			(month < constellations[nextIndex][0] || (month == constellations[nextIndex][0] && day < constellations[nextIndex][1])) {
+			return uint(i)
+		}
+	}
+	return 0
+}
