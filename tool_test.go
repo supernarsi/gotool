@@ -588,3 +588,43 @@ func BenchmarkIsMultibyte(b *testing.B) {
 		}
 	}
 }
+
+func TestCalSwitchRemain(t *testing.T) {
+	testCases := []struct {
+		name          string
+		inputLastTime int
+		inputCd       int
+		want          int
+	}{
+		{"t1", 10001, 0, 0},
+		{"t2", 10001, 1, 0},
+	}
+
+	for _, v := range testCases {
+		t.Run(v.name, func(t *testing.T) {
+			if got := gotool.CalSwitchRemain(v.inputLastTime, v.inputCd); got != v.want {
+				t.Errorf("CalSwitchRemain() = %v, want %v", got, v.want)
+			}
+		})
+	}
+}
+
+func TestGetConstellation(t *testing.T) {
+	testCases := []struct {
+		name      string
+		inputTime int64
+		want      uint
+	}{
+		{"t1", 1751853004, 6},
+		{"t2", 1736179200, 0},
+		{"t3", 1765900800, 11},
+	}
+
+	for _, v := range testCases {
+		t.Run(v.name, func(t *testing.T) {
+			if got := gotool.GetConstellation(v.inputTime); got != v.want {
+				t.Errorf("GetConstellation() = %v, want %v", got, v.want)
+			}
+		})
+	}
+}
