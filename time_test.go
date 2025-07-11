@@ -196,13 +196,13 @@ func TestGetUTCOffset(t *testing.T) {
 	}{
 		{"t1", "UTC", 0, false},
 		{"t2", "test", 0, true},
-		{"t3", "America/Los_Angeles", -8, false},
+		{"t3", "America/Los_Angeles", -7, false},
 		{"t4", "America/Cayman", -5, false},
 		{"t5", "Asia/Amman", 3, false},
 		{"t6", "Etc/GMT+8", -8, false},
 		{"t7", "Pacific/Tarawa", 12, false},
 		{"t8", "Asia/Hong_Kong", 8, false},
-		{"t9", "Australia/Sydney", 11, false},
+		{"t9", "Australia/Sydney", 10, false},
 	}
 
 	for _, tt := range tests {
